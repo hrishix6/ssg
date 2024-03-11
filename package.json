@@ -4,7 +4,8 @@
   "description": "experiment: static site generator using node",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc-watch --onSuccess \"nodemon ./dist/main.js\""
+    "dev": "tsc-watch --onSuccess \"nodemon ./dist/main.js\"",
+    "dev-script": "tsc-watch --onSuccess \"nodemon ./dist/scripts/run.js \""
   },
   "keywords": [],
   "author": "",
