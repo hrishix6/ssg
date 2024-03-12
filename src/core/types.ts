@@ -7,3 +7,7 @@ export enum TextType {
     Image = "image",
     Unknown = "unknown"
 }
+
+export const MarkDownImageRegex = /!\[(.*?)\]\((.*?)\)/g
+
+export const MarkDownLinkRegex = /\[(.*?)\]\((.*?)\)/g

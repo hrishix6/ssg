@@ -1,5 +1,5 @@
 import { ImageTextNode, LinkTextNode, TextNode } from "./text.node";
-import { TextType } from "./types";
+import { MarkDownImageRegex, MarkDownLinkRegex, TextType } from "./types";
 
 export class Parser {
     private static matchBracketAndLink(part: string): [string, string] {
@@ -53,6 +53,7 @@ export class Parser {
     }
 
     private static processTextNode(node: TextNode, del: string | RegExp, textType: TextType): TextNode[] {
+
         let parts: string[];
         if (del instanceof RegExp) {
             parts = Parser.splitImageLinks(node.text, del);
@@ -61,7 +62,7 @@ export class Parser {
             parts = Parser.splitInline(node.text, del);
         }
 
-        if (parts.length == 2) {
+        if (!(del instanceof RegExp) && parts.length == 2) {
             //if a text node has proper block for eg. "This is a `code block`."
             //it will split into 3 or more parts always. if only opening is there but no closing, 
             //eg. "This is s `code block" it will be less than 3 parts.
@@ -115,5 +116,15 @@ export class Parser {
         }
 
         return newNodes;
+    }
+
+    public static textToTextNodes(raw: string): TextNode[] {
+        const startingNode = new TextNode(raw, TextType.Normal);
+        let nodes = Parser.getNewTextNodes([startingNode], MarkDownImageRegex, TextType.Image);
+        nodes = Parser.getNewTextNodes(nodes, MarkDownLinkRegex, TextType.Link);
+        nodes = Parser.getNewTextNodes(nodes, "**", TextType.Bold);
+        nodes = Parser.getNewTextNodes(nodes, "*", TextType.Italic);
+        nodes = Parser.getNewTextNodes(nodes, "`", TextType.Code);
+        return nodes;
     }
 }
