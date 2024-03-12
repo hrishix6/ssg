@@ -11,7 +11,7 @@ export class TextNode {
     constructor(text: string, textType: TextType, url?: string) {
         this.text = text;
         this.textType = textType;
-        this.url = url || "NONE";
+        this.url = url || "";
     }
 
     equal(arg: TextNode): boolean {
@@ -37,37 +37,52 @@ export class TextNode {
     }
 
     toHtmlNode(): HtmlNode {
-        let node: HtmlNode;
-        switch (this.textType) {
-            case TextType.Normal:
-                node = new LeafNode('', this.text);
-                break;
-
-            case TextType.Bold:
-                node = new LeafNode(TextTypeToHtmlTag[TextType.Bold], this.text);
-                break;
-
-            case TextType.Code:
-                node = new LeafNode(TextTypeToHtmlTag[TextType.Code], this.text);
-                break;
-
-            case TextType.Image:
-                node = new LeafNode(TextTypeToHtmlTag[TextType.Image], "", { "src": this.url, "alt": this.text });
-                break;
-
-            case TextType.Italic:
-                node = new LeafNode(TextTypeToHtmlTag[TextType.Italic], this.text);
-                break;
-
-            case TextType.Link:
-                node = new LeafNode(TextTypeToHtmlTag[TextType.Link], this.text, { "href": this.url });
-                break;
-
-            default:
-                throw new Error("Unsupported text type");
-        }
-
-        return node!;
+        throw new Error('not implemented');
     }
 
+}
+
+export class InlineTextNode extends TextNode {
+
+    constructor(text: string, textType: TextType) {
+        super(text, textType);
+    }
+
+
+    toHtmlNode(): HtmlNode {
+        let tag: string = TextTypeToHtmlTag[this.textType];
+        return new LeafNode(tag, this.text);
+    }
+
+}
+
+export class ImageTextNode extends TextNode {
+    constructor(text: string, textType: TextType, url: string) {
+        super(text, textType, url);
+
+        if (!url) {
+            throw new Error("Image node must have url");
+        }
+    }
+
+    toHtmlNode(): HtmlNode {
+        let tag: string = TextTypeToHtmlTag[this.textType];
+        return new LeafNode(tag, "", { "src": this.url, "alt": this.text });
+    }
+
+}
+
+export class LinkTextNode extends TextNode {
+    constructor(text: string, textType: TextType, url: string) {
+        super(text, textType, url);
+
+        if (!url) {
+            throw new Error("Link node must have url");
+        }
+    }
+
+    toHtmlNode(): HtmlNode {
+        let tag: string = TextTypeToHtmlTag[this.textType];
+        return new LeafNode(tag, this.text, { href: this.url });
+    }
 }
